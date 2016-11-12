@@ -39,7 +39,18 @@ class Parser(object):
 		for record in self.jobj['data']:
 			if record['userid'] not in self.top10:
 				continue
-			print json.dumps(record)
+			print "\t".join([
+				record['tzrq'],
+				record['tzsj'],
+				record['userid'],
+				record['uidNick'],
+				record['mmbz'],
+				record['stkMktCode'],
+				record['stkName'],
+				record['cjjg'],
+				record['hold1'],
+				record['hold2']
+				]).encode("utf8")
 
 
 
