@@ -1,6 +1,9 @@
+#coding=utf-8
 import sys
 from Parser import Parser 
-sys.path.append("/Users/tiansheng/Documents/workspace/python_project/")
+basepath = "/Users/tiansheng/Documents/workspace/python_project/"
+#basepath = "/root/"
+sys.path.append(basepath)
 from Spider import Crawler
 import time
 
@@ -9,8 +12,8 @@ parser.updateTop10()
 t = 2
 page = 0
 start_pos = 0
-print parser.top10
-while page < 100:
+parser.printHtmlHeader()
+while page < 1:
 	parser.fetchTrade(str(start_pos),str(page))
 	parser.findTop10Trade()
 	start_pos = 20*page #do not change order
