@@ -2,7 +2,6 @@
 import sys
 import os
 sys.path.append(sys.path.append(sys.path.append(os.path.dirname(__file__) + os.sep + '../')))
-from UI.UI import UI
 from config_reader import reader
 from config_reader.exceptions import (ConfigKeyNotFoundError,
                                       ConfigParseError,
@@ -12,7 +11,6 @@ from Spider import Crawler
 import time
 
 config = reader.ConfigReader([os.environ,"EastFinance/conf.json"])
-ui = UI()
 parser = Parser()
 parser.updateTop10()
 mode = config.get_boolean("realtime")# False history
