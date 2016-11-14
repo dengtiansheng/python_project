@@ -1,12 +1,15 @@
 #coding=utf-8
 import sys
-basepath = "/Users/tiansheng/Documents/workspace/python_project/"
-#basepath = "/root/"
-sys.path.append(basepath)
+import os 
+sys.path.append(sys.path.append(os.path.dirname(__file__) + os.sep + '../'))
 import json
 from Spider.Crawler import Crawler
 from Mail.Email import Email
 import time
+from config_reader import reader
+from config_reader.exceptions import (ConfigKeyNotFoundError,
+                                      ConfigParseError,
+                                      ConfigTypeCastError)
 
 class Parser(object):
 	"""docstring for ClassName"""
@@ -14,10 +17,12 @@ class Parser(object):
 		self.top10 = list()
 		self.crawler = Crawler()
 		self.jobj = None
-		self.htmlPath = basepath + "test.html"
-		self.logPath = basepath + "log"
+		dirctory = os.path.dirname(__file__) + os.sep
+		self.htmlPath = dirctory + "test.html"
+		self.logPath = dirctory + "log"
 		self.tickIDSet = set()
 		self.mailer = Email()
+		self.config = reader.ConfigReader([os.environ,"EastFinance/conf.json"])
 
 	def printHtmlHeader(self):
 		head = '<html lang="zh-CN"><head><meta charset="utf-8"><style type="text/css"> body,table{font-size:12px; } table{table-layout:fixed; empty-cells:show; border-collapse: collapse; margin:0 auto; } td{height:30px; } h1,h2,h3{font-size:12px; margin:0; padding:0; } .table{border:1px solid #cad9ea; color:#666; } .table th {background-repeat:repeat-x; height:30px; } .table td,.table th{border:1px solid #cad9ea; padding:0 1em 0; } .table tr.alter{background-color:#f5fafe; } </style></head>'
@@ -34,17 +39,7 @@ class Parser(object):
 	def updateTop10(self):
 		#url = "http://spzhcs.eastmoney.com/rtcs1?type=rtcs_get_rank&khqz=116&rankType=0&recIdx=0&recCnt=20&rankid=1&userId="
 		#res = crawler.fetch_url(url=url)
-		self.top10 = ["1862113294062566",
-		"6438013861173624",
-		"9310094719273070",
-		"8096014763275768",
-		"7812212495398148",
-		"6229014760997974",
-		"6346113846404544",
-		"9707513801914802",
-		"8578013772618202",
-		"3453094249465624"
-		]
+		self.top10 = self.config.get_string("top_ten").split(',')
 
 	def fetchTrade(self,start_pos=None,page = None):
 		if None != page or None != start_pos:
@@ -53,7 +48,11 @@ class Parser(object):
 			url = "http://spzhcs.eastmoney.com/rtcs1?type=rtcs_expert_trade&khqz=116&rankType=0&recIdx=0&recCnt=20&rankid=0&userId="
 		cs = Crawler()
 		res = cs.fetch_url(url=url)
-		self.jobj = json.loads(res)
+		if None != res:
+			self.jobj = json.loads(res)
+			return True
+		else:
+			return False
 
 	def formatDate(self,day):
 		#20161111
@@ -90,7 +89,7 @@ class Parser(object):
 			log += "\n"
 			if record['userid'] not in self.top10:
 				continue
-			self.mailer.sendmail(item,item,"87403102@qq.com,149641004@qq.com")
+			self.mailer.sendmail(item,item,self.config.get_string("email_addr"))
 			tr += "".join(['<tr> ',
 				'<td>'+record['tzrq'].encode("utf8")+'</td>',
 				'<td>'+record['tzsj'].encode("utf8")+'</td>',
