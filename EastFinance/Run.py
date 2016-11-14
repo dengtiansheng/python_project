@@ -19,6 +19,11 @@ page = 0
 start_pos = 0
 parser.printHtmlHeader()
 while True:
+	cur_time = time.localtime().tm_hour*60 + time.localtime().tm_min
+	if cur_time > 11*60+31 and cur_time < 13*60-2:
+		print "I am having a snap"+"\t"+time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())+"\n"
+		sleep(60)
+		continue
 	if False == parser.fetchTrade(str(start_pos),str(page)):
 		print "retry"
 		time.sleep(t)
@@ -29,3 +34,4 @@ while True:
 		page += 1
 	print str(page)+"\t"+time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())+"\n"
 	time.sleep(t)
+
