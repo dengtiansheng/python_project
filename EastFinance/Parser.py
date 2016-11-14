@@ -66,7 +66,11 @@ class Parser(object):
 		#print json.dumps(self.jobj['data'])
 		tr = ""
 		log = ""
-		for record in self.jobj['data']:
+		cnt = len(self.jobj['data'])
+		i = cnt 
+		while i > 0:
+			i -= 1
+			record = self.jobj['data'][i]
 			#if already in set,skip
 			tickID = record['tzrq']+record['tzsj']+record['userid']
 			if tickID in self.tickIDSet:
@@ -83,7 +87,8 @@ class Parser(object):
 				record['stkName'],
 				record['cjjg'],
 				record['hold1'],
-				record['hold2']
+				record['hold2'],
+				time.strftime("%H:%M:%S", time.localtime())
 				]).encode("utf8")
 			log += item
 			log += "\n"
@@ -102,6 +107,7 @@ class Parser(object):
 				'<td>'+record['hold2'].encode("utf8")+'</td>',
 				'</tr>'])
 			tr += "\n"
+			
 		self.writeFile(self.htmlPath,tr)
 		self.writeFile(self.logPath,log)
 
